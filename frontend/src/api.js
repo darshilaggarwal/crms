@@ -69,10 +69,31 @@ export const api = {
   },
   getProfile: () => request('/auth/profile/'),
   getBranches: () => request('/auth/branches/'),
+  createBranch: (data) =>
+    request('/auth/branches/', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+  getUsers: (role = '') => request(`/auth/users/${role ? `?role=${role}` : ''}`),
+  createUser: (userData) =>
+    request('/auth/users/', {
+      method: 'POST',
+      body: JSON.stringify(userData),
+    }),
 
   // Loans & Customers
   getCustomers: () => request('/loans/customers/'),
+  createCustomer: (customerData) =>
+    request('/loans/customers/', {
+      method: 'POST',
+      body: JSON.stringify(customerData),
+    }),
   getLoans: () => request('/loans/'),
+  createLoan: (loanData) =>
+    request('/loans/', {
+      method: 'POST',
+      body: JSON.stringify(loanData),
+    }),
   getLoanSchedule: (loanId) => request(`/loans/${loanId}/schedule/`),
 
   // Agent Actions

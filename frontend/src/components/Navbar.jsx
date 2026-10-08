@@ -44,6 +44,17 @@ export default function Navbar({ currentUser, activeTab, setActiveTab, onSwitchU
             </button>
 
             <button
+              onClick={() => setActiveTab('admin')}
+              className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
+                activeTab === 'admin'
+                  ? 'bg-white text-slate-900 shadow-sm border border-slate-200/80'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              Admin Master Control
+            </button>
+
+            <button
               onClick={() => setActiveTab('agent')}
               className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
                 activeTab === 'agent'

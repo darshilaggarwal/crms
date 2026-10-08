@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { api, tokenStorage } from './api';
 import Navbar from './components/Navbar';
 import DashboardView from './components/DashboardView';
+import AdminManagement from './components/AdminManagement';
 import AgentPortal from './components/AgentPortal';
 import BranchPortal from './components/BranchPortal';
 import CollectionHistory from './components/CollectionHistory';
@@ -182,6 +183,7 @@ export default function App() {
 
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {activeTab === 'dashboard' && <DashboardView currentUser={currentUser} />}
+        {activeTab === 'admin' && <AdminManagement currentUser={currentUser} />}
         {activeTab === 'agent' && <AgentPortal currentUser={currentUser} />}
         {activeTab === 'branch' && <BranchPortal currentUser={currentUser} />}
         {activeTab === 'history' && <CollectionHistory currentUser={currentUser} />}

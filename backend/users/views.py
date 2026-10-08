@@ -40,11 +40,34 @@ class ProfileView(APIView):
         return Response(serializer.data)
 
 
-class BranchListView(generics.ListAPIView):
-    """List all active branches."""
+class BranchListCreateView(generics.ListCreateAPIView):
+    """List all active branches or create a new branch."""
     serializer_class = BranchSerializer
     permission_classes = [permissions.IsAuthenticated]
     queryset = Branch.objects.filter(is_active=True)
+
+
+class UserListCreateView(generics.ListCreateAPIView):
+    """
+    GET: List all users (supports ?role=AGENT or ?role=BRANCH_MANAGER)
+    POST: Create a new user (Admin can create Branch Managers and Agents)
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_serializer_class(self):
+        if self.request.method == 'POST':
+            return RegisterUserSerializer
+        return UserSerializer
+
+    def get_queryset(self):
+        qs = User.objects.all().order_by('-date_joined')
+        role_filter = self.request.query_params.get('role')
+        branch_filter = self.request.query_params.get('branch_id')
+        if role_filter:
+            qs = qs.filter(role=role_filter.upper())
+        if branch_filter:
+            qs = qs.filter(branch_id=branch_filter)
+        return qs
 
 
 class AgentListView(generics.ListAPIView):
@@ -59,3 +82,4 @@ class AgentListView(generics.ListAPIView):
         if user.is_branch_manager and user.branch:
             qs = qs.filter(branch=user.branch)
         return qs
+
