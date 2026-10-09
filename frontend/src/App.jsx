@@ -208,21 +208,6 @@ export default function App() {
         {activeTab === 'branch' && <BranchPortal currentUser={currentUser} />}
         {activeTab === 'history' && <CollectionHistory currentUser={currentUser} />}
       </main>
-
-      {/* Subtle Footer */}
-      <footer className="border-t border-slate-200 bg-white py-4 mt-auto">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between text-[11px] text-slate-500 gap-2">
-          <div>
-            <span className="font-semibold text-slate-700">ARTH CMRS</span> • Cash Management & Reconciliation System
-          </div>
-          <div className="flex items-center gap-4">
-            <span>Transaction Lifecycle: Expected → Collected → Branch Received → Bank Deposited → Settled</span>
-            <a href="http://localhost:8000/api/docs/" target="_blank" rel="noreferrer" className="text-slate-900 font-medium underline">
-              API Docs (/api/docs/)
-            </a>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }
