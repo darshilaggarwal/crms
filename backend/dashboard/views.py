@@ -187,12 +187,19 @@ class AgentSummaryView(APIView):
                 agent=agent, status=Collection.Status.HELD_BY_AGENT
             ).aggregate(total=Sum('amount_collected'))['total'] or Decimal('0.00')
 
+            unsubmitted_count = Collection.objects.filter(
+                agent=agent, status=Collection.Status.HELD_BY_AGENT
+            ).count()
+
             result.append({
                 'agent_id': agent.id,
                 'agent_name': agent.get_full_name() or agent.username,
+                'username': agent.username,
+                'employee_id': agent.employee_id,
                 'branch': agent.branch.name if agent.branch else None,
                 'total_collected': str(collected),
                 'cash_in_hand': str(in_hand),
+                'unsubmitted_count': unsubmitted_count,
             })
 
         return Response({'agents': result})

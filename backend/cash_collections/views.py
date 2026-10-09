@@ -186,13 +186,39 @@ class AgentDailyCollectionsView(generics.ListAPIView):
 class SubmitToBranchView(APIView):
     """
     POST /api/collections/submit-to-branch/
-    Agent submits all held cash to their branch at end of day.
+    Agent submits all held cash to their branch, OR
+    Branch Manager / Admin receives cash from a specific agent at the branch counter.
     """
-    permission_classes = [IsAgent]
+    permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request):
+        agent_id = request.data.get('agent_id')
+        if agent_id:
+            # Branch manager or Admin receiving cash from a specific agent
+            if not (request.user.is_branch_manager or request.user.is_admin):
+                return Response(
+                    {'error': 'Only branch managers or admins can receive cash on behalf of agents.'},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+            try:
+                from users.models import User
+                target_agent = User.objects.get(id=agent_id, role='AGENT')
+            except User.DoesNotExist:
+                return Response({'error': 'Agent not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+            # If branch manager, ensure agent belongs to manager's branch
+            if request.user.is_branch_manager and request.user.branch and target_agent.branch != request.user.branch:
+                return Response({'error': 'Agent does not belong to your branch.'}, status=status.HTTP_403_FORBIDDEN)
+        else:
+            if not request.user.is_agent:
+                return Response(
+                    {'error': 'Agent ID is required when receiving cash as manager.'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            target_agent = request.user
+
         try:
-            submission = CollectionService.submit_to_branch(agent=request.user)
+            submission = CollectionService.submit_to_branch(agent=target_agent)
         except (ValidationError, Exception) as e:
             error_msg = e.messages if hasattr(e, 'messages') else str(e)
             return Response({'error': error_msg}, status=status.HTTP_400_BAD_REQUEST)

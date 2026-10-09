@@ -91,15 +91,11 @@ export default function AgentPortal({ currentUser }) {
 
   // Submit collected cash to branch
   const handleSubmitToBranch = async () => {
-    if (!window.confirm(`Submit ₹${dailyData.total_cash_in_hand} in cash to your branch manager for physical verification?`)) {
-      return;
-    }
-
     try {
       setSubmittingToBranch(true);
       setErrorMsg('');
       const res = await api.submitToBranch();
-      setSuccessMsg(`Cash handover submitted to branch! Expected: ₹${res.expected_amount}. Status: Pending Verification.`);
+      setSuccessMsg(`Cash handover submitted to branch! Expected: ₹${res.expected_amount}. Status: Pending Verification by Branch Manager.`);
       await loadData();
     } catch (err) {
       setErrorMsg(err.message || 'Failed to submit cash to branch');

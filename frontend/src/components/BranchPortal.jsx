@@ -17,6 +17,7 @@ export default function BranchPortal({ currentUser }) {
   const [submissions, setSubmissions] = useState([]);
   const [deposits, setDeposits] = useState([]);
   const [branches, setBranches] = useState([]);
+  const [agents, setAgents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('reconcile'); // 'reconcile' | 'deposits'
 
@@ -46,13 +47,15 @@ export default function BranchPortal({ currentUser }) {
     try {
       setLoading(true);
       setErrorMsg('');
-      const [subRes, depRes, branchRes] = await Promise.all([
+      const [subRes, depRes, branchRes, agentRes] = await Promise.all([
         api.getSubmissions(),
         api.getBankDeposits(),
         api.getBranches(),
+        api.getAgentSummaries().catch(() => ({ agents: [] })),
       ]);
       setSubmissions(subRes.results || subRes || []);
       setDeposits(depRes.results || depRes || []);
+      setAgents(agentRes.agents || []);
       const bList = branchRes.results || branchRes || [];
       setBranches(bList);
       if (bList.length > 0 && !depositForm.branch) {
@@ -151,6 +154,24 @@ export default function BranchPortal({ currentUser }) {
     }
   };
 
+  // Manager receives cash directly from an agent at the branch counter
+  const handleReceiveFromAgent = async (agent) => {
+    try {
+      setActionLoading(true);
+      setErrorMsg('');
+      const sub = await api.submitToBranch(agent.agent_id);
+      setSuccessMsg(`Initiated cash handover for ${agent.agent_name} (₹${Number(sub.expected_amount).toLocaleString('en-IN')}). Proceeding to physical cash count.`);
+      await loadData();
+      // Open verification modal directly
+      handleOpenVerify(sub);
+    } catch (err) {
+      setErrorMsg(err.message || 'Failed to initiate cash handover from agent');
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const agentsWithFloatingCash = agents.filter((a) => Number(a.cash_in_hand || 0) > 0);
   const pendingSubmissions = submissions.filter((s) => s.status === 'PENDING');
   const pastSubmissions = submissions.filter((s) => s.status !== 'PENDING');
 
@@ -189,7 +210,7 @@ export default function BranchPortal({ currentUser }) {
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              Agent Handover Queue ({pendingSubmissions.length})
+              Agent Handover Queue ({pendingSubmissions.length + agentsWithFloatingCash.length})
             </button>
             <button
               onClick={() => setActiveTab('deposits')}
@@ -222,6 +243,62 @@ export default function BranchPortal({ currentUser }) {
       {/* TAB 1: RECONCILIATION QUEUE */}
       {activeTab === 'reconcile' && (
         <div className="space-y-6">
+
+          {/* ACTIVE FLOATING CASH FROM AGENTS */}
+          {agentsWithFloatingCash.length > 0 && (
+            <div className="bg-white border-2 border-amber-300/80 rounded-2xl shadow-xs overflow-hidden">
+              <div className="p-4 bg-amber-50/70 border-b border-amber-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"></span>
+                    <h3 className="text-sm font-bold text-amber-950 tracking-tight">
+                      Field Agents with Cash in Hand ({agentsWithFloatingCash.length})
+                    </h3>
+                  </div>
+                  <p className="text-xs text-amber-900/80 mt-0.5">
+                    These agents have collected cash in the field. When the agent arrives at your counter, click <strong>Receive Cash at Counter</strong> to verify and deposit into vault.
+                  </p>
+                </div>
+              </div>
+
+              <div className="divide-y divide-amber-100 bg-white">
+                {agentsWithFloatingCash.map((agent) => (
+                  <div key={agent.agent_id} className="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-amber-50/30 transition-colors">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="font-bold text-slate-900 text-sm">{agent.agent_name}</span>
+                        <span className="text-[11px] font-mono text-slate-500 font-semibold">({agent.employee_id || agent.username})</span>
+                        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-200">
+                          {agent.unsubmitted_count || 1} VOUCHER{agent.unsubmitted_count === 1 ? '' : 'S'} IN HAND
+                        </span>
+                      </div>
+                      <div className="text-xs text-slate-500 mt-1">
+                        Branch: {agent.branch || 'Gurugram Main'} • Status: Floating Cash with Field Agent
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-5">
+                      <div className="text-right">
+                        <div className="text-[10px] uppercase font-bold text-slate-400">Cash in Custody</div>
+                        <div className="text-xl font-extrabold font-mono text-amber-600">
+                          ₹{Number(agent.cash_in_hand).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                        </div>
+                      </div>
+
+                      <button
+                        onClick={() => handleReceiveFromAgent(agent)}
+                        disabled={actionLoading}
+                        className="px-4 py-2.5 text-xs font-bold text-white bg-slate-900 rounded-xl hover:bg-slate-800 disabled:opacity-50 transition-colors shadow-2xs flex items-center gap-1.5"
+                      >
+                        <span>Receive Cash at Counter</span>
+                        <ArrowRight className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
           
           {/* Pending Submissions */}
           <div className="bg-white border border-slate-200/90 rounded-2xl shadow-2xs overflow-hidden">

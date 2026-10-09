@@ -103,9 +103,10 @@ export const api = {
       body: JSON.stringify({ schedule_id: scheduleId, amount, notes }),
     }),
   getAgentDailyCollections: () => request('/collections/my-collections/'),
-  submitToBranch: () =>
+  submitToBranch: (agentId = null) =>
     request('/collections/submit-to-branch/', {
       method: 'POST',
+      body: JSON.stringify(agentId ? { agent_id: agentId } : {}),
     }),
 
   // Branch Manager Actions
