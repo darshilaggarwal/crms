@@ -41,14 +41,8 @@ export default function Navbar({ currentUser, activeTab, setActiveTab, onSwitchU
         <div className="flex items-center justify-between h-15">
           
           {/* Brand */}
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-slate-900 text-white flex items-center justify-center font-bold text-xs tracking-wider">
-              AR
-            </div>
-            <div>
-              <div className="font-bold text-slate-900 text-sm tracking-tight leading-none">ARTH CMRS</div>
-              <div className="text-[11px] text-slate-500 hidden sm:block mt-0.5">Cash Management & Reconciliation</div>
-            </div>
+          <div className="flex items-center">
+            <span className="font-extrabold text-slate-900 text-lg tracking-tight font-mono">CMRS</span>
           </div>
 
           {/* Strict Role-Based Navigation Tabs */}

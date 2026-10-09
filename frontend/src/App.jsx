@@ -98,10 +98,7 @@ export default function App() {
       <div className="min-h-screen bg-slate-100 flex items-center justify-center p-4">
         <div className="bg-white border border-slate-200 rounded-2xl shadow-sm max-w-md w-full p-8 space-y-6">
           <div className="text-center space-y-1">
-            <div className="w-10 h-10 rounded-lg bg-slate-900 text-white flex items-center justify-center font-bold text-base mx-auto mb-3">
-              AR
-            </div>
-            <h1 className="text-lg font-bold text-slate-900">ARTH CMRS Portal</h1>
+            <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight font-mono">CMRS</h1>
             <p className="text-xs text-slate-500">
               Cash Management & Reconciliation System
             </p>
