@@ -9,12 +9,38 @@ export default function Navbar({ currentUser, activeTab, setActiveTab, onSwitchU
     { username: 'agent_mohan', label: '🚴 Agent 2 (Mohan Lal)', role: 'AGENT' },
   ];
 
+  // STRICT ROLE-BASED ACCESS CONTROL (RBAC) NAVIGATION
+  // Only tabs authorized for the user's specific role are rendered.
+  const getAuthorizedTabs = (role) => {
+    switch (role) {
+      case 'AGENT':
+        return [
+          { id: 'agent', label: 'Field Collections & EMIs' },
+          { id: 'history', label: 'My Receipt History' },
+        ];
+      case 'BRANCH_MANAGER':
+        return [
+          { id: 'branch', label: 'Branch Vault & Bank Reconciliation' },
+          { id: 'history', label: 'Branch Audit Trail' },
+        ];
+      case 'ADMIN':
+      default:
+        return [
+          { id: 'dashboard', label: 'Executive Dashboard' },
+          { id: 'admin', label: 'Master Data & Staff Control' },
+          { id: 'history', label: 'System Audit Trail' },
+        ];
+    }
+  };
+
+  const navTabs = getAuthorizedTabs(currentUser?.role);
+
   return (
     <header className="bg-white/95 backdrop-blur-md border-b border-slate-200/90 sticky top-0 z-40">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-15">
           
-          {/* Logo & System Brand */}
+          {/* Brand & System Status */}
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-lg bg-slate-900 text-white flex items-center justify-center font-bold text-sm tracking-wider shadow-2xs">
               AR
@@ -24,77 +50,43 @@ export default function Navbar({ currentUser, activeTab, setActiveTab, onSwitchU
                 <span className="font-bold text-slate-900 text-sm tracking-tight">ARTH CMRS</span>
                 <span className="inline-flex items-center gap-1 text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                  Live Ledger
+                  RBAC Secured
                 </span>
               </div>
-              <p className="text-[11px] text-slate-400 hidden sm:block font-medium">Cash Management & Reconciliation</p>
+              <p className="text-[11px] text-slate-400 hidden sm:block font-medium">
+                {currentUser?.role === 'AGENT' && 'Field Agent Collection Portal'}
+                {currentUser?.role === 'BRANCH_MANAGER' && 'Branch Vault & Reconciliation Portal'}
+                {currentUser?.role === 'ADMIN' && 'Head Office Executive Portal'}
+              </p>
             </div>
           </div>
 
-          {/* Navigation Tab Bar */}
+          {/* Strict Role-Based Navigation Tabs */}
           <nav className="flex items-center gap-1 bg-slate-100 p-1 rounded-lg border border-slate-200/80">
-            <button
-              onClick={() => setActiveTab('dashboard')}
-              className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-all ${
-                activeTab === 'dashboard'
-                  ? 'bg-white text-slate-900 shadow-2xs border border-slate-200/90'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/50'
-              }`}
-            >
-              Executive Dashboard
-            </button>
-
-            <button
-              onClick={() => setActiveTab('admin')}
-              className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-all ${
-                activeTab === 'admin'
-                  ? 'bg-white text-slate-900 shadow-2xs border border-slate-200/90'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/50'
-              }`}
-            >
-              Admin Master Control
-            </button>
-
-            <button
-              onClick={() => setActiveTab('agent')}
-              className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-all ${
-                activeTab === 'agent'
-                  ? 'bg-white text-slate-900 shadow-2xs border border-slate-200/90'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/50'
-              }`}
-            >
-              Agent Collections
-            </button>
-
-            <button
-              onClick={() => setActiveTab('branch')}
-              className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-all ${
-                activeTab === 'branch'
-                  ? 'bg-white text-slate-900 shadow-2xs border border-slate-200/90'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/50'
-              }`}
-            >
-              Branch Reconciliation & Bank
-            </button>
-
-            <button
-              onClick={() => setActiveTab('history')}
-              className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-all ${
-                activeTab === 'history'
-                  ? 'bg-white text-slate-900 shadow-2xs border border-slate-200/90'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/50'
-              }`}
-            >
-              Audit Trail
-            </button>
+            {navTabs.map((tab) => {
+              const isActive = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-all ${
+                    isActive
+                      ? 'bg-white text-slate-900 shadow-2xs border border-slate-200/90'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/50'
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              );
+            })}
           </nav>
 
-          {/* User Controls & Demo Switcher */}
+          {/* User Controls & Evaluator Quick Switcher */}
           <div className="flex items-center gap-3">
-            {/* Quick Demo Switcher */}
+            {/* Quick Demo Switcher for Evaluation */}
             <div className="hidden lg:flex items-center gap-1.5 text-xs">
               <span className="text-slate-400 flex items-center gap-1 text-[11px] font-medium">
-                <ArrowRightLeft className="w-3 h-3 text-slate-400" /> Switch Role:
+                <ArrowRightLeft className="w-3 h-3 text-slate-400" /> Switch View:
               </span>
               <select
                 value={currentUser?.username || ''}
@@ -119,8 +111,11 @@ export default function Navbar({ currentUser, activeTab, setActiveTab, onSwitchU
                   {currentUser?.full_name || currentUser?.username}
                 </div>
                 <div className="text-[10px] text-slate-500 font-mono flex items-center gap-1 mt-0.5">
-                  <span className="inline-block w-1 h-1 rounded-full bg-emerald-500"></span>
-                  {currentUser?.role} {currentUser?.branch ? `• ${currentUser.branch.city}` : ''}
+                  <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                  {currentUser?.role === 'AGENT' && 'FIELD AGENT'}
+                  {currentUser?.role === 'BRANCH_MANAGER' && 'BRANCH MANAGER'}
+                  {currentUser?.role === 'ADMIN' && 'HEAD OFFICE'}
+                  {currentUser?.branch ? ` • ${currentUser.branch.city}` : ''}
                 </div>
               </div>
             </div>

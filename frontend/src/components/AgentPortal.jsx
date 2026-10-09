@@ -119,14 +119,6 @@ export default function AgentPortal({ currentUser }) {
   return (
     <div className="space-y-6">
 
-      {currentUser?.role !== 'AGENT' && (
-        <div className="p-3 bg-blue-50/80 border border-blue-200/90 rounded-xl text-xs text-blue-900 flex items-center justify-between shadow-2xs">
-          <span>
-            ℹ️ You are viewing this screen as <strong>{currentUser?.role}</strong>. To test field collection actions, switch to <strong>Agent Suresh</strong> or <strong>Agent Mohan</strong> in the top navbar.
-          </span>
-        </div>
-      )}
-
       {/* Agent Summary Banner */}
       <div className="bg-white border border-slate-200/90 rounded-2xl p-6 shadow-2xs">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-5">

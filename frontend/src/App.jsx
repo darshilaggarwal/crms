@@ -34,12 +34,32 @@ export default function App() {
       const data = await api.login(username, password);
       setToken(data.access);
       setCurrentUser(data.user);
+      if (data.user?.role === 'AGENT') {
+        setActiveTab('agent');
+      } else if (data.user?.role === 'BRANCH_MANAGER') {
+        setActiveTab('branch');
+      } else {
+        setActiveTab('dashboard');
+      }
     } catch (err) {
       setLoginError(err.message || 'Login failed');
     } finally {
       setLoading(false);
     }
   };
+
+  // Guard against unauthorized tabs for current role
+  useEffect(() => {
+    if (currentUser) {
+      if (currentUser.role === 'AGENT' && !['agent', 'history'].includes(activeTab)) {
+        setActiveTab('agent');
+      } else if (currentUser.role === 'BRANCH_MANAGER' && !['branch', 'history'].includes(activeTab)) {
+        setActiveTab('branch');
+      } else if (currentUser.role === 'ADMIN' && !['dashboard', 'admin', 'history'].includes(activeTab)) {
+        setActiveTab('dashboard');
+      }
+    }
+  }, [currentUser]);
 
   const handleQuickLogin = async (uname) => {
     try {
