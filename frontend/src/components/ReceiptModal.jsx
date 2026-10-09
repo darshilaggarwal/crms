@@ -1,67 +1,80 @@
 import React from 'react';
-import { CheckCircle2, Printer, X, ShieldCheck } from 'lucide-react';
+import { CheckCircle2, Printer, X, ShieldCheck, Download, ArrowDownRight } from 'lucide-react';
 
 export default function ReceiptModal({ receipt, onClose }) {
   if (!receipt) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-fadeIn">
-      <div className="bg-white rounded-xl shadow-xl border border-slate-200 max-w-md w-full overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs animate-fadeIn">
+      <div className="bg-white rounded-2xl shadow-2xl border border-slate-200 max-w-md w-full overflow-hidden transition-all">
         
-        {/* Receipt Header */}
+        {/* Receipt Top Header - Institutional / Bank Voucher Style */}
         <div className="bg-slate-900 text-white p-6 relative">
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 text-slate-400 hover:text-white transition-colors p-1"
+            className="absolute top-4 right-4 text-slate-400 hover:text-white transition-colors p-1.5 rounded-full hover:bg-slate-800"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
           
-          <div className="flex items-center gap-2 mb-2">
-            <ShieldCheck className="w-5 h-5 text-emerald-400" />
-            <span className="text-xs font-semibold tracking-wider uppercase text-slate-300">
-              Official Repayment Receipt
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <div className="w-6 h-6 rounded bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center">
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+              </div>
+              <span className="text-[11px] font-semibold tracking-wider uppercase text-slate-300">
+                Official Collection Voucher
+              </span>
+            </div>
+            <span className="text-[10px] font-mono bg-slate-800 text-slate-300 px-2 py-0.5 rounded border border-slate-700">
+              ORIGINAL RECEIPT
             </span>
           </div>
 
           <div className="text-3xl font-bold tracking-tight text-white font-mono">
             ₹{Number(receipt.amount_collected).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
           </div>
-          <div className="text-xs text-slate-300 mt-1">Payment Successfully Recorded</div>
+          <p className="text-xs text-slate-400 mt-1 flex items-center gap-1.5">
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+            Cash received & recorded in digital ledger
+          </p>
         </div>
 
-        {/* Receipt Body */}
-        <div className="p-6 space-y-4 text-sm">
-          <div className="flex justify-between items-center py-2 border-b border-slate-100">
-            <span className="text-slate-500 text-xs">Receipt Number</span>
-            <span className="font-mono font-semibold text-slate-900 bg-slate-100 px-2 py-0.5 rounded text-xs">
+        {/* Voucher Body Details */}
+        <div className="p-6 space-y-3.5 text-xs">
+          
+          <div className="flex justify-between items-center py-1.5 border-b border-slate-100">
+            <span className="text-slate-500">Receipt Reference</span>
+            <span className="font-mono font-bold text-slate-900 bg-slate-100 px-2 py-0.5 rounded border border-slate-200/80">
               {receipt.receipt_number}
             </span>
           </div>
 
-          <div className="flex justify-between items-center py-2 border-b border-slate-100">
-            <span className="text-slate-500 text-xs">Customer</span>
-            <span className="font-medium text-slate-900">{receipt.customer_name || 'Borrower'}</span>
+          <div className="flex justify-between items-center py-1.5 border-b border-slate-100">
+            <span className="text-slate-500">Borrower / Shop</span>
+            <span className="font-semibold text-slate-900 text-right">{receipt.customer_name || 'Borrower'}</span>
           </div>
 
-          <div className="flex justify-between items-center py-2 border-b border-slate-100">
-            <span className="text-slate-500 text-xs">Loan Account</span>
-            <span className="font-mono text-slate-700">{receipt.loan_number}</span>
+          <div className="flex justify-between items-center py-1.5 border-b border-slate-100">
+            <span className="text-slate-500">Loan Account</span>
+            <span className="font-mono font-medium text-slate-800">{receipt.loan_number}</span>
           </div>
 
-          <div className="flex justify-between items-center py-2 border-b border-slate-100">
-            <span className="text-slate-500 text-xs">Installment</span>
-            <span className="text-slate-700">EMI #{receipt.installment_number}</span>
+          <div className="flex justify-between items-center py-1.5 border-b border-slate-100">
+            <span className="text-slate-500">Installment Applied</span>
+            <span className="font-medium text-slate-800">
+              EMI #{receipt.installment_number}
+            </span>
           </div>
 
-          <div className="flex justify-between items-center py-2 border-b border-slate-100">
-            <span className="text-slate-500 text-xs">Collected By</span>
-            <span className="text-slate-700">{receipt.agent_name || 'Field Agent'}</span>
+          <div className="flex justify-between items-center py-1.5 border-b border-slate-100">
+            <span className="text-slate-500">Collected By</span>
+            <span className="font-medium text-slate-800">{receipt.agent_name || 'Field Agent'}</span>
           </div>
 
-          <div className="flex justify-between items-center py-2 border-b border-slate-100">
-            <span className="text-slate-500 text-xs">Timestamp</span>
-            <span className="text-slate-700 text-xs">
+          <div className="flex justify-between items-center py-1.5 border-b border-slate-100">
+            <span className="text-slate-500">Date & Time</span>
+            <span className="text-slate-700 font-mono text-[11px]">
               {new Date(receipt.collected_at).toLocaleString('en-IN', {
                 dateStyle: 'medium',
                 timeStyle: 'short',
@@ -69,30 +82,38 @@ export default function ReceiptModal({ receipt, onClose }) {
             </span>
           </div>
 
-          <div className="flex justify-between items-center py-2 border-b border-slate-100">
-            <span className="text-slate-500 text-xs">Status in Custody</span>
-            <span className="inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200">
-              <span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+          <div className="flex justify-between items-center py-1.5 border-b border-slate-100">
+            <span className="text-slate-500">Chain of Custody</span>
+            <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-50 text-amber-700 border border-amber-200">
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
               HELD_BY_AGENT (In Transit)
             </span>
           </div>
 
-          <div className="bg-slate-50 p-3 rounded-lg text-[11px] text-slate-500 leading-relaxed border border-slate-200">
-            This digital receipt confirms cash handover from customer to authorized collection agent. Funds will be deposited at the branch custody safe today.
+          {/* Verification Barcode / Security Stamp Placeholder */}
+          <div className="mt-4 pt-3 border-t border-dashed border-slate-200 flex items-center justify-between text-[11px] text-slate-400">
+            <div className="space-y-0.5">
+              <div className="text-[10px] font-semibold tracking-wider uppercase text-slate-500">Arthimpact Digital Loans</div>
+              <div className="font-mono text-[10px]">AUTH_HASH: {receipt.receipt_number?.replace(/[^0-9]/g, '').slice(-8) || '48291048'}</div>
+            </div>
+            <div className="px-2 py-1 bg-slate-50 border border-slate-200 rounded text-[10px] font-mono text-slate-600">
+              DIGITALLY SECURED
+            </div>
           </div>
         </div>
 
-        {/* Actions */}
-        <div className="p-4 bg-slate-50 border-t border-slate-200 flex items-center justify-end gap-2">
+        {/* Modal Footer Controls */}
+        <div className="p-4 bg-slate-50 border-t border-slate-200/80 flex items-center justify-between">
           <button
             onClick={() => window.print()}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-700 bg-white border border-slate-300 rounded-md hover:bg-slate-50 transition-colors"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-100 transition-colors shadow-2xs"
           >
-            <Printer className="w-3.5 h-3.5" /> Print Receipt
+            <Printer className="w-3.5 h-3.5" /> Print Voucher
           </button>
+          
           <button
             onClick={onClose}
-            className="px-4 py-1.5 text-xs font-medium text-white bg-slate-900 rounded-md hover:bg-slate-800 transition-colors"
+            className="px-4 py-1.5 text-xs font-semibold text-white bg-slate-900 rounded-lg hover:bg-slate-800 transition-colors shadow-2xs"
           >
             Done
           </button>

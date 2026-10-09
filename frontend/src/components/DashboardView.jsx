@@ -8,7 +8,11 @@ import {
   AlertTriangle,
   ArrowRight,
   Filter,
-  RefreshCw
+  RefreshCw,
+  ShieldCheck,
+  Vault,
+  Landmark,
+  ArrowUpRight
 } from 'lucide-react';
 
 export default function DashboardView({ currentUser }) {
@@ -63,16 +67,19 @@ export default function DashboardView({ currentUser }) {
     <div className="space-y-6">
 
       {/* Header & Filter Toolbar */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white border border-slate-200/90 rounded-2xl p-6 shadow-2xs">
         <div>
-          <div className="text-xs font-semibold uppercase tracking-wider text-slate-500">
-            Real-Time Cash Intelligence
+          <div className="flex items-center gap-2">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+              Real-Time Financial Intelligence
+            </span>
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
           </div>
-          <h2 className="text-xl font-bold text-slate-900 mt-1">
-            Executive Cash Reconciliation Dashboard
+          <h2 className="text-xl font-extrabold text-slate-900 tracking-tight mt-1">
+            Executive Cash Reconciliation & Custody Overview
           </h2>
           <p className="text-xs text-slate-500 mt-0.5">
-            Full visibility across loan expectations, field collections, branch safes, and bank settlements.
+            Real-time multi-branch visibility across expected recovery, field collections, branch safes, and bank settlements.
           </p>
         </div>
 
@@ -81,7 +88,7 @@ export default function DashboardView({ currentUser }) {
           <select
             value={branchFilter}
             onChange={(e) => setBranchFilter(e.target.value)}
-            className="text-xs bg-slate-50 border border-slate-300 rounded-md px-2.5 py-1.5 focus:outline-none"
+            className="text-xs font-semibold bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 focus:bg-white focus:outline-none focus:ring-1 focus:ring-slate-900 shadow-2xs transition-colors"
           >
             <option value="">All Branches</option>
             {branches.map((b) => (
@@ -95,20 +102,20 @@ export default function DashboardView({ currentUser }) {
             type="date"
             value={dateFrom}
             onChange={(e) => setDateFrom(e.target.value)}
-            className="text-xs bg-slate-50 border border-slate-300 rounded-md px-2 py-1.5 focus:outline-none"
+            className="text-xs font-mono bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 focus:bg-white focus:outline-none focus:ring-1 focus:ring-slate-900 shadow-2xs transition-colors"
           />
 
           <input
             type="date"
             value={dateTo}
             onChange={(e) => setDateTo(e.target.value)}
-            className="text-xs bg-slate-50 border border-slate-300 rounded-md px-2 py-1.5 focus:outline-none"
+            className="text-xs font-mono bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 focus:bg-white focus:outline-none focus:ring-1 focus:ring-slate-900 shadow-2xs transition-colors"
           />
 
           <button
             onClick={loadDashboard}
             title="Refresh metrics"
-            className="p-1.5 text-slate-600 hover:text-slate-900 border border-slate-300 rounded-md hover:bg-slate-50 transition-colors"
+            className="p-1.5 text-slate-600 hover:text-slate-900 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors shadow-2xs"
           >
             <RefreshCw className="w-4 h-4" />
           </button>
@@ -116,7 +123,7 @@ export default function DashboardView({ currentUser }) {
       </div>
 
       {errorMsg && (
-        <div className="p-3 rounded-lg bg-rose-50 border border-rose-200 text-xs text-rose-700">
+        <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-700">
           {errorMsg}
         </div>
       )}
@@ -125,58 +132,66 @@ export default function DashboardView({ currentUser }) {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         
         {/* KPI 1: Expected Collections */}
-        <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
-          <div className="flex items-center justify-between text-slate-500 mb-2">
-            <span className="text-xs font-semibold uppercase tracking-wider">1. Expected Collections</span>
-            <TrendingUp className="w-4 h-4 text-slate-400" />
+        <div className="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-2xs hover:border-slate-300 transition-all">
+          <div className="flex items-center justify-between text-slate-500 mb-3">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">1. Expected Recovery</span>
+            <div className="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center text-slate-600">
+              <TrendingUp className="w-4 h-4" />
+            </div>
           </div>
-          <div className="text-2xl font-bold font-mono text-slate-900">
+          <div className="text-2xl font-extrabold font-mono text-slate-900 tracking-tight">
             ₹{Number(s.total_expected_collections || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
           </div>
-          <div className="text-xs text-slate-500 mt-1">
-            Total active EMIs scheduled for recovery
+          <div className="text-[11px] text-slate-400 mt-1 font-medium">
+            Active EMI schedule receivables
           </div>
         </div>
 
         {/* KPI 2: Total Collected */}
-        <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
-          <div className="flex items-center justify-between text-slate-500 mb-2">
-            <span className="text-xs font-semibold uppercase tracking-wider">2. Total Collected</span>
-            <Banknote className="w-4 h-4 text-emerald-600" />
+        <div className="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-2xs hover:border-slate-300 transition-all">
+          <div className="flex items-center justify-between text-slate-500 mb-3">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">2. Field Collected</span>
+            <div className="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
+              <Banknote className="w-4 h-4" />
+            </div>
           </div>
-          <div className="text-2xl font-bold font-mono text-emerald-600">
+          <div className="text-2xl font-extrabold font-mono text-emerald-600 tracking-tight">
             ₹{Number(s.total_collected || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
           </div>
-          <div className="text-xs text-slate-500 mt-1">
-            Cash successfully recovered from customers
+          <div className="text-[11px] text-slate-400 mt-1 font-medium">
+            Recovered via official receipt vouchers
           </div>
         </div>
 
         {/* KPI 3: Cash Held by Agents (In-Transit) */}
-        <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
-          <div className="flex items-center justify-between text-slate-500 mb-2">
-            <span className="text-xs font-semibold uppercase tracking-wider">3. Cash Held by Agents</span>
-            <span className="inline-block w-2 h-2 rounded-full bg-amber-500"></span>
+        <div className="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-2xs hover:border-slate-300 transition-all">
+          <div className="flex items-center justify-between text-slate-500 mb-3">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">3. In Transit (Agents)</span>
+            <div className="w-7 h-7 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center">
+              <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+            </div>
           </div>
-          <div className="text-2xl font-bold font-mono text-amber-600">
+          <div className="text-2xl font-extrabold font-mono text-amber-600 tracking-tight">
             ₹{Number(s.cash_held_by_agents || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
           </div>
-          <div className="text-xs text-slate-500 mt-1">
-            In-transit: collected but not yet at branch safe
+          <div className="text-[11px] text-slate-400 mt-1 font-medium">
+            Awaiting physical vault handover
           </div>
         </div>
 
         {/* KPI 4: Cash at Branches vs Settled in Bank */}
-        <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
-          <div className="flex items-center justify-between text-slate-500 mb-2">
-            <span className="text-xs font-semibold uppercase tracking-wider">4. Settled in Bank</span>
-            <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+        <div className="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-2xs hover:border-slate-300 transition-all">
+          <div className="flex items-center justify-between text-slate-500 mb-3">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">4. Bank Settled</span>
+            <div className="w-7 h-7 rounded-lg bg-slate-900 text-white flex items-center justify-center">
+              <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+            </div>
           </div>
-          <div className="text-2xl font-bold font-mono text-slate-900">
+          <div className="text-2xl font-extrabold font-mono text-slate-900 tracking-tight">
             ₹{Number(s.total_settled || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
           </div>
-          <div className="text-xs text-slate-500 mt-1">
-            At Branch Safe: ₹{Number(s.cash_at_branches || 0).toLocaleString('en-IN')}
+          <div className="text-[11px] text-slate-400 mt-1 font-medium">
+            At Branch Safe: <span className="font-mono text-slate-700 font-bold">₹{Number(s.cash_at_branches || 0).toLocaleString('en-IN')}</span>
           </div>
         </div>
 
@@ -185,84 +200,88 @@ export default function DashboardView({ currentUser }) {
       {/* SECONDARY METRICS: DISCREPANCIES & LOAN OUTSTANDING */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         
-        <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
-          <div className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">
-            Branch Cash Shortages Flagged
+        <div className="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-2xs">
+          <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">
+            Handover Cash Shortages Flagged
           </div>
-          <div className="text-xl font-bold font-mono text-rose-600">
+          <div className="text-xl font-extrabold font-mono text-rose-600">
             ₹{Number(d.total_shortage || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
           </div>
-          <div className="text-xs text-slate-400 mt-0.5">Missing cash reported during agent handover</div>
+          <div className="text-[11px] text-slate-400 mt-0.5">Physical discrepancies reported during handover</div>
         </div>
 
-        <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
-          <div className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">
+        <div className="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-2xs">
+          <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">
             Total Bank Deposits Registered
           </div>
-          <div className="text-xl font-bold font-mono text-slate-900">
+          <div className="text-xl font-extrabold font-mono text-slate-900">
             ₹{Number(s.total_bank_deposited || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
           </div>
-          <div className="text-xs text-slate-400 mt-0.5">Deposited with verified bank Challan / UTR</div>
+          <div className="text-[11px] text-slate-400 mt-0.5">Deposited with verified bank Challan / UTR</div>
         </div>
 
-        <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
-          <div className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">
+        <div className="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-2xs">
+          <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">
             Company Total Loan Outstanding
           </div>
-          <div className="text-xl font-bold font-mono text-slate-900">
+          <div className="text-xl font-extrabold font-mono text-slate-900">
             ₹{Number(s.total_loan_outstanding || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
           </div>
-          <div className="text-xs text-slate-400 mt-0.5">Remaining borrower debt balance</div>
+          <div className="text-[11px] text-slate-400 mt-0.5">Unrecovered principal and interest balance</div>
         </div>
 
       </div>
 
       {/* VISUAL TRANSACTION LIFECYCLE PROGRESSION */}
-      <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
-        <h3 className="text-sm font-semibold text-slate-900 mb-1">
-          Complete Transaction Lifecycle Progression
-        </h3>
-        <p className="text-xs text-slate-500 mb-4">
-          Tracking the full journey of physical money from customer to final company bank account settlement.
-        </p>
+      <div className="bg-white border border-slate-200/90 rounded-2xl p-6 shadow-2xs">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h3 className="text-sm font-bold text-slate-900 tracking-tight">
+              5-Stage Financial Lifecycle Pipeline
+            </h3>
+            <p className="text-xs text-slate-500 mt-0.5">
+              Strict digital chain of custody from customer hand to final company bank account settlement.
+            </p>
+          </div>
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
           
-          <div className="p-3 rounded-lg bg-slate-50 border border-slate-200">
-            <div className="text-[11px] font-semibold text-slate-500 uppercase tracking-wide">1. Expected</div>
-            <div className="text-base font-bold font-mono text-slate-900 mt-1">
+          <div className="p-4 rounded-xl bg-slate-50 border border-slate-200/80">
+            <div className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">01. EXPECTED</div>
+            <div className="text-base font-extrabold font-mono text-slate-900 mt-1">
               ₹{Number(lifecycle.expected || 0).toLocaleString('en-IN')}
             </div>
-            <div className="text-[10px] text-slate-400 mt-1">Loan EMI Due Date</div>
+            <div className="text-[10px] text-slate-500 mt-1">Scheduled EMI Repayments</div>
           </div>
 
-          <div className="p-3 rounded-lg bg-emerald-50 border border-emerald-200">
-            <div className="text-[11px] font-semibold text-emerald-700 uppercase tracking-wide">2. Collected</div>
-            <div className="text-base font-bold font-mono text-emerald-800 mt-1">
+          <div className="p-4 rounded-xl bg-emerald-50/70 border border-emerald-200/90">
+            <div className="text-[10px] font-extrabold text-emerald-700 uppercase tracking-wider">02. COLLECTED</div>
+            <div className="text-base font-extrabold font-mono text-emerald-800 mt-1">
               ₹{Number(lifecycle.collected || 0).toLocaleString('en-IN')}
             </div>
-            <div className="text-[10px] text-emerald-600 mt-1">Receipt Issued by Agent</div>
+            <div className="text-[10px] text-emerald-600 mt-1">Receipts Issued in Field</div>
           </div>
 
-          <div className="p-3 rounded-lg bg-slate-50 border border-slate-200">
-            <div className="text-[11px] font-semibold text-slate-500 uppercase tracking-wide">3. Branch Received</div>
-            <div className="text-base font-bold font-mono text-slate-900 mt-1">
+          <div className="p-4 rounded-xl bg-slate-50 border border-slate-200/80">
+            <div className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">03. BRANCH VAULT</div>
+            <div className="text-base font-extrabold font-mono text-slate-900 mt-1">
               ₹{Number(lifecycle.branch_received || 0).toLocaleString('en-IN')}
             </div>
-            <div className="text-[10px] text-slate-400 mt-1">Verified at Branch Safe</div>
+            <div className="text-[10px] text-slate-500 mt-1">Verified at Branch Counter</div>
           </div>
 
-          <div className="p-3 rounded-lg bg-slate-50 border border-slate-200">
-            <div className="text-[11px] font-semibold text-slate-500 uppercase tracking-wide">4. Bank Deposited</div>
-            <div className="text-base font-bold font-mono text-slate-900 mt-1">
+          <div className="p-4 rounded-xl bg-slate-50 border border-slate-200/80">
+            <div className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">04. BANK DEPOSITED</div>
+            <div className="text-base font-extrabold font-mono text-slate-900 mt-1">
               ₹{Number(lifecycle.bank_deposited || 0).toLocaleString('en-IN')}
             </div>
-            <div className="text-[10px] text-slate-400 mt-1">Deposited with UTR Slip</div>
+            <div className="text-[10px] text-slate-500 mt-1">Bank Challan UTR Recorded</div>
           </div>
 
-          <div className="p-3 rounded-lg bg-emerald-50 border border-emerald-200">
-            <div className="text-[11px] font-semibold text-emerald-700 uppercase tracking-wide">5. Settled</div>
-            <div className="text-base font-bold font-mono text-emerald-800 mt-1">
+          <div className="p-4 rounded-xl bg-emerald-50/70 border border-emerald-200/90">
+            <div className="text-[10px] font-extrabold text-emerald-700 uppercase tracking-wider">05. SETTLED</div>
+            <div className="text-base font-extrabold font-mono text-emerald-800 mt-1">
               ₹{Number(lifecycle.settled || 0).toLocaleString('en-IN')}
             </div>
             <div className="text-[10px] text-emerald-600 mt-1">Reconciliation Complete</div>
@@ -272,43 +291,45 @@ export default function DashboardView({ currentUser }) {
       </div>
 
       {/* AGENT PERFORMANCE BREAKDOWN TABLE */}
-      <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
-        <div className="p-4 border-b border-slate-200">
-          <h3 className="text-sm font-semibold text-slate-900">
-            Field Collection Agent Summary
+      <div className="bg-white border border-slate-200/90 rounded-2xl shadow-2xs overflow-hidden">
+        <div className="p-5 border-b border-slate-100">
+          <h3 className="text-sm font-bold text-slate-900 tracking-tight">
+            Field Collection Agent Custody Breakdown
           </h3>
-          <p className="text-xs text-slate-500">Live custody tracking per collection officer</p>
+          <p className="text-xs text-slate-500 mt-0.5">Real-time custody tracking per active field recovery officer</p>
         </div>
 
         <table className="w-full text-left text-xs">
-          <thead className="bg-slate-50 border-b border-slate-200 text-slate-600 font-medium">
+          <thead className="bg-slate-50/75 border-b border-slate-200 text-slate-600 font-semibold uppercase text-[10px] tracking-wider">
             <tr>
-              <th className="py-2.5 px-4">Agent Name</th>
-              <th className="py-2.5 px-4">Assigned Branch</th>
-              <th className="py-2.5 px-4">Total Collected</th>
-              <th className="py-2.5 px-4">Cash Currently in Hand (In-Transit)</th>
-              <th className="py-2.5 px-4">Status</th>
+              <th className="py-3 px-4">Agent Name</th>
+              <th className="py-3 px-4">Assigned Branch</th>
+              <th className="py-3 px-4">Total Collected</th>
+              <th className="py-3 px-4">Cash Currently In Hand</th>
+              <th className="py-3 px-4">Custody Status</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
             {agents.map((ag) => (
-              <tr key={ag.agent_id} className="hover:bg-slate-50">
-                <td className="py-3 px-4 font-semibold text-slate-900">{ag.agent_name}</td>
-                <td className="py-3 px-4 text-slate-600">{ag.branch || '—'}</td>
-                <td className="py-3 px-4 font-mono">
+              <tr key={ag.agent_id} className="hover:bg-slate-50/60 transition-colors">
+                <td className="py-3.5 px-4 font-bold text-slate-900">{ag.agent_name}</td>
+                <td className="py-3.5 px-4 text-slate-600">{ag.branch || '—'}</td>
+                <td className="py-3.5 px-4 font-mono font-medium">
                   ₹{Number(ag.total_collected).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                 </td>
-                <td className="py-3 px-4 font-mono font-bold text-amber-700">
+                <td className="py-3.5 px-4 font-mono font-bold text-amber-700">
                   ₹{Number(ag.cash_in_hand).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                 </td>
-                <td className="py-3 px-4">
+                <td className="py-3.5 px-4">
                   {Number(ag.cash_in_hand) > 0 ? (
-                    <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-amber-50 text-amber-700 border border-amber-200">
-                      HOLDING CASH
+                    <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-50 text-amber-700 border border-amber-200">
+                      <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
+                      HOLDING PHYSICAL CASH
                     </span>
                   ) : (
-                    <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                      ALL CASH SUBMITTED
+                    <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                      ALL CASH RECONCILED
                     </span>
                   )}
                 </td>
